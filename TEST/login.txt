@@ -1,0 +1,55 @@
+Request URL
+https://kwork.ru/api/user/login
+Request Method
+POST
+
+PAYLOAD:
+{"l_username":"odiljohn","l_password":"odiljon_2007@","jlog":1,"recaptcha_pass_token":"","track_client_id":false,"smart-token":"","l_remember_me":"1"}
+
+HEADER:
+POST /api/user/login HTTP/1.1
+Accept: application/json, text/plain, */*
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: ru,en;q=0.9
+Connection: keep-alive
+Content-Length: 150
+Content-Type: application/json
+Cookie: referrer_url=https%3A%2F%2Fwww.yandex.ru%2Fclck%2Fjsredir%3Ffrom%3Dyandex.ru%3Bsuggest%3Bbrowser%26text%3D; _gcl_au=1.1.564064738.1766759666; _ym_uid=1766759666807780360; _ym_d=1766759666; yandex_client_id=1766759666807780360; _ym_isad=2; _ym_visorc=w; accept_cookie_device_id=161dcd2e74ec9bdb17ae16d4f5db4dd2
+Host: kwork.ru
+Origin: https://kwork.ru
+Referer: https://kwork.ru/
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-origin
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 YaBrowser/25.10.0.0 Safari/537.36
+X-Requested-With: XMLHttpRequest
+sec-ch-ua: "Chromium";v="140", "Not=A?Brand";v="24", "YaBrowser";v="25.10", "Yowser";v="2.5"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Linux"
+
+RESPONSE HEADER:
+HTTP/1.1 200 OK
+Server: QRATOR
+Date: Fri, 26 Dec 2025 14:34:48 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+Keep-Alive: timeout=15
+Vary: Accept-Encoding, User-Agent
+Content-Security-Policy: frame-ancestors 'self' https://webvisor.com https://awards.ratingruneta.ru
+Set-Cookie: uad=17753326694e9d08b511c694726849; expires=Sat, 26-Dec-2026 14:34:48 GMT; Max-Age=31536000; path=/; secure; HttpOnly; SameSite=None
+Set-Cookie: RORSSQIHEK=5d0ab7beea5827b10ec8b01d7a5f7f2b; expires=Mon, 29-Dec-2025 14:34:48 GMT; Max-Age=259200; path=/; secure; HttpOnly; SameSite=None
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Set-Cookie: csrf_user_token=26cbca754874cc12fa4a6ee667f8684e; expires=Sat, 26-Dec-2026 14:34:48 GMT; Max-Age=31536000; path=/; secure; HttpOnly; SameSite=None
+Set-Cookie: userId=17753326; expires=Mon, 24-Dec-2035 14:34:48 GMT; Max-Age=315360000; path=/; secure; SameSite=None
+Set-Cookie: slrememberme=17753326_%242y%2410%24BuleL%2FKhQTdky3Pmmz%2Fst.JnNgTVTbx6kQcoWwnBZPQqqccPmXQy2; expires=Sat, 26-Dec-2026 14:34:48 GMT; Max-Age=31536000; path=/; secure; HttpOnly; SameSite=None
+Set-Cookie: _kmid=01b74730fc288eb7beb3b5c1b8f5eb58; expires=Mon, 24-Dec-2035 14:34:48 GMT; Max-Age=315360000; path=/; secure; HttpOnly; SameSite=None
+Set-Cookie: _kmfvt=1766759688; expires=Mon, 24-Dec-2035 14:34:48 GMT; Max-Age=315360000; path=/; secure; HttpOnly; SameSite=None
+Set-Cookie: csrf_user_token=83ec6273169e62132d3119dbf540b60a; expires=Sat, 26-Dec-2026 14:34:48 GMT; Max-Age=31536000; path=/; secure; HttpOnly; SameSite=None
+Cache-Control: no-cache, private
+Strict-Transport-Security: max-age=15552000
+X-Content-Type-Options: nosniff
+Content-Encoding: gzip
+

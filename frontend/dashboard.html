@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kwork AI Project Manager - Boshqaruv paneli">
+    <title>Dashboard | Kwork AI PM</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">🤖</div>
+                    <span class="sidebar-logo-text">Kwork AI PM</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Asosiy</div>
+                    <a href="#" class="nav-item active" data-page="dashboard">
+                        <span class="nav-item-icon">📊</span>
+                        <span class="nav-item-text">Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="jobs">
+                        <span class="nav-item-icon">📋</span>
+                        <span class="nav-item-text">E'lonlar</span>
+                        <span class="nav-item-badge" id="pendingBadge" style="display: none;">0</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Sozlamalar</div>
+                    <a href="#" class="nav-item" data-page="ai-settings">
+                        <span class="nav-item-icon">🧠</span>
+                        <span class="nav-item-text">AI Sozlamalari</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="telegram-settings">
+                        <span class="nav-item-icon">📱</span>
+                        <span class="nav-item-text">Telegram</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="kwork-settings">
+                        <span class="nav-item-icon">🔑</span>
+                        <span class="nav-item-text">Kwork Account</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user" id="sidebarUser">
+                    <div class="avatar" id="userAvatar">A</div>
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name" id="userName">Admin</div>
+                        <div class="sidebar-user-role">Administrator</div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn" title="Chiqish">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16,17 21,12 16,7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h1 class="header-title" id="pageTitle">Dashboard</h1>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-search">
+                        <input type="text" placeholder="Qidirish..." id="globalSearch">
+                        <span class="header-search-icon">🔍</span>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="header-action-btn" id="refreshBtn" title="Yangilash">
+                            🔄
+                        </button>
+                        <button class="header-action-btn" id="aiStatusBtn" title="AI Status">
+                            <span id="aiStatusIcon">🔴</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Dashboard Page -->
+                <div class="page" id="page-dashboard">
+                    <!-- AI Status Panel -->
+                    <div class="ai-status-panel" id="aiStatusPanel">
+                        <div class="ai-status-header">
+                            <div class="ai-status-title">
+                                <div class="ai-status-dot" id="aiStatusDot"></div>
+                                <h3>AI Project Manager</h3>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="aiToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="ai-status-details">
+                            <div class="ai-status-item">
+                                <span class="ai-status-label">Model</span>
+                                <span class="ai-status-value" id="aiModel">—</span>
+                            </div>
+                            <div class="ai-status-item">
+                                <span class="ai-status-label">API Key</span>
+                                <span class="ai-status-value" id="aiApiKey">—</span>
+                            </div>
+                            <div class="ai-status-item">
+                                <span class="ai-status-label">Prompt</span>
+                                <span class="ai-status-value" id="aiPrompt">—</span>
+                            </div>
+                            <div class="ai-status-item">
+                                <span class="ai-status-label">Telegram</span>
+                                <span class="ai-status-value" id="telegramStatus">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon-wrapper primary">📋</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="statTotal">0</div>
+                                <div class="stat-label">Jami e'lonlar</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon-wrapper warning">⏳</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="statPending">0</div>
+                                <div class="stat-label">Kutilmoqda</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon-wrapper success">✅</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="statResponded">0</div>
+                                <div class="stat-label">Javob berilgan</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon-wrapper error">⏭️</div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="statSkipped">0</div>
+                                <div class="stat-label">O'tkazib yuborilgan</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Jobs Section -->
+                    <div class="section-header">
+                        <h2 class="section-title">So'nggi e'lonlar</h2>
+                        <a href="#" class="btn btn-secondary btn-sm" data-page="jobs">
+                            Barchasini ko'rish →
+                        </a>
+                    </div>
+                    <div class="jobs-table-wrapper">
+                        <table class="jobs-table">
+                            <thead>
+                                <tr>
+                                    <th>E'lon</th>
+                                    <th>Byudjet</th>
+                                    <th>Status</th>
+                                    <th>Ishonch</th>
+                                    <th>Vaqt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentJobsTable">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted" style="padding: 40px;">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">📭</div>
+                                            <div class="empty-state-title">E'lonlar yo'q</div>
+                                            <div class="empty-state-description">Hozircha hech qanday e'lon topilmadi
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Jobs Page -->
+                <div class="page hidden" id="page-jobs">
+                    <div class="section-header">
+                        <h2 class="section-title">Barcha e'lonlar</h2>
+                        <div class="section-actions">
+                            <div class="filters-bar">
+                                <div class="filter-tabs">
+                                    <button class="filter-tab active" data-status="all">Barchasi</button>
+                                    <button class="filter-tab" data-status="pending">Kutilmoqda</button>
+                                    <button class="filter-tab" data-status="responded">Javob berilgan</button>
+                                    <button class="filter-tab" data-status="skipped">O'tkazilgan</button>
+                                </div>
+                                <div class="filter-search">
+                                    <input type="text" placeholder="E'lon qidirish..." id="jobSearch">
+                                    <span class="filter-search-icon">🔍</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="jobs-table-wrapper">
+                        <table class="jobs-table">
+                            <thead>
+                                <tr>
+                                    <th>E'lon</th>
+                                    <th>Byudjet</th>
+                                    <th>Status</th>
+                                    <th>Ishonch</th>
+                                    <th>Risk</th>
+                                    <th>Telegram</th>
+                                    <th>Vaqt</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="jobsTableBody">
+                                <!-- Jobs will be loaded here -->
+                            </tbody>
+                        </table>
+
+                        <div class="pagination" id="pagination">
+                            <div class="pagination-info">
+                                <span id="paginationInfo">0 ta e'londan 0-0</span>
+                            </div>
+                            <div class="pagination-controls" id="paginationControls">
+                                <!-- Pagination buttons -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Settings Page -->
+                <div class="page hidden" id="page-ai-settings">
+                    <div class="section-header">
+                        <h2 class="section-title">AI Sozlamalari</h2>
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <div class="settings-card-icon ai">🧠</div>
+                                <div>
+                                    <div class="settings-card-title">AI Model</div>
+                                    <div class="text-sm text-muted">AI modelni tanlang va API kalitini kiriting</div>
+                                </div>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="settings-row">
+                                    <label class="settings-label">AI Model</label>
+                                    <select class="settings-input select" id="aiModelSelect">
+                                        <optgroup label="Google Gemini">
+                                            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Tez)</option>
+                                            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Yangi)</option>
+                                            <option value="gemini-pro">Gemini Pro</option>
+                                        </optgroup>
+                                        <optgroup label="OpenAI">
+                                            <option value="gpt-4">GPT-4</option>
+                                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                        </optgroup>
+                                        <optgroup label="Anthropic">
+                                            <option value="claude-3-opus">Claude 3 Opus</option>
+                                            <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="settings-row">
+                                    <label class="settings-label">API Key</label>
+                                    <input type="password" class="settings-input" id="aiApiKeyInput"
+                                        placeholder="Gemini: AIza..., OpenAI: sk-..., Anthropic: sk-ant-...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <div class="settings-card-icon ai">📝</div>
+                                <div>
+                                    <div class="settings-card-title">AI Prompt</div>
+                                    <div class="text-sm text-muted">AI uchun asosiy ko'rsatmalar</div>
+                                </div>
+                                <button class="btn-icon-sm" id="promptFullscreenBtn" title="Kattalashtirish">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="settings-row">
+                                    <label class="settings-label">System Prompt</label>
+                                    <textarea class="settings-input settings-textarea" id="aiPromptInput"
+                                        placeholder="AI uchun batafsil ko'rsatmalarni kiriting..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: var(--space-6); display: flex; justify-content: flex-end; gap: var(--space-3);">
+                        <button class="btn btn-secondary" id="resetAISettings">Bekor qilish</button>
+                        <button class="btn btn-primary" id="saveAISettings">Saqlash</button>
+                    </div>
+
+                    <!-- AI Test Section -->
+                    <div class="settings-card" style="margin-top: var(--space-6);">
+                        <div class="settings-card-header">
+                            <div class="settings-card-icon ai">🧪</div>
+                            <div>
+                                <div class="settings-card-title">AI Test</div>
+                                <div class="text-sm text-muted">E'lon matnini kiritib AI javobini tekshiring</div>
+                            </div>
+                        </div>
+                        <div class="settings-card-body">
+                            <div class="settings-row">
+                                <label class="settings-label">E'lon matni (Kwork e'lon textini shu yerga
+                                    qo'ying)</label>
+                                <textarea class="settings-input settings-textarea" id="aiTestInput"
+                                    placeholder="Masalan: Sayt uchun Python backend kerak. Django yoki FastAPI bilan ishlasangiz yaxshi bo'lardi. Byudjet: 5000 rub."></textarea>
+                            </div>
+                            <div class="settings-row">
+                                <button class="btn btn-primary" id="testAIBtn" style="width: 100%;">
+                                    🚀 AI bilan test qilish
+                                </button>
+                            </div>
+                            <div class="settings-row" id="aiTestResultContainer" style="display: none;">
+                                <label class="settings-label">AI Javob</label>
+                                <div id="aiTestResult" class="ai-test-result"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Telegram Settings Page -->
+                <div class="page hidden" id="page-telegram-settings">
+                    <div class="section-header">
+                        <h2 class="section-title">Telegram Sozlamalari</h2>
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <div class="settings-card-icon telegram">📱</div>
+                                <div>
+                                    <div class="settings-card-title">Telegram Bot</div>
+                                    <div class="text-sm text-muted">Bot token va guruh ID ni kiriting</div>
+                                </div>
+                                <label class="toggle settings-card-toggle">
+                                    <input type="checkbox" id="telegramEnabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="settings-row">
+                                    <label class="settings-label">Bot Token</label>
+                                    <input type="password" class="settings-input" id="telegramBotToken"
+                                        placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz">
+                                </div>
+                                <div class="settings-row">
+                                    <label class="settings-label">Group/Chat ID</label>
+                                    <input type="text" class="settings-input" id="telegramGroupId"
+                                        placeholder="-1001234567890">
+                                </div>
+                            </div>
+                            <div class="settings-card-footer">
+                                <button class="btn btn-secondary" id="testTelegram">
+                                    🔔 Test xabar yuborish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: var(--space-6); display: flex; justify-content: flex-end; gap: var(--space-3);">
+                        <button class="btn btn-secondary" id="resetTelegramSettings">Bekor qilish</button>
+                        <button class="btn btn-primary" id="saveTelegramSettings">Saqlash</button>
+                    </div>
+                </div>
+
+                <!-- Kwork Settings Page -->
+                <div class="page hidden" id="page-kwork-settings">
+                    <div class="section-header">
+                        <h2 class="section-title">Kwork Account</h2>
+                    </div>
+
+                    <div class="settings-grid">
+                        <!-- Kwork Status Panel -->
+                        <div class="kwork-status-panel" id="kworkStatusPanel">
+                            <div class="kwork-status-header">
+                                <div class="kwork-status-indicator" id="kworkStatusIndicator">
+                                    <span class="status-dot" id="kworkStatusDot"></span>
+                                    <span id="kworkStatusText">Tekshirilmoqda...</span>
+                                </div>
+                                <div class="kwork-status-info">
+                                    <span class="text-muted">Foydalanuvchi:</span>
+                                    <span id="kworkUsernameDisplay">-</span>
+                                </div>
+                            </div>
+                            <div class="kwork-status-actions">
+                                <button class="btn btn-secondary btn-sm" id="checkProjectsBtn" disabled>
+                                    🔄 E'lonlarni tekshirish
+                                </button>
+                                <button class="btn btn-danger btn-sm hidden" id="kworkLogoutBtn">
+                                    🚪 Chiqish
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-card" id="kworkLoginCard">
+                            <div class="settings-card-header">
+                                <div class="settings-card-icon kwork">🔑</div>
+                                <div>
+                                    <div class="settings-card-title">Kwork Hisobi</div>
+                                    <div class="text-sm text-muted">Kwork platformasiga kirish ma'lumotlari</div>
+                                </div>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="settings-row">
+                                    <label class="settings-label">Login (email yoki telefon)</label>
+                                    <input type="text" class="settings-input" id="kworkUsername"
+                                        placeholder="email@example.com yoki +998901234567">
+                                </div>
+                                <div class="settings-row">
+                                    <label class="settings-label">Parol</label>
+                                    <input type="password" class="settings-input" id="kworkPassword"
+                                        placeholder="••••••••">
+                                </div>
+                            </div>
+                            <div class="settings-card-footer">
+                                <button class="btn btn-primary" id="kworkLoginBtn">
+                                    🔐 Kirish
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="settings-card-header">
+                                <div class="settings-card-icon kwork">⚙️</div>
+                                <div>
+                                    <div class="settings-card-title">Skanerlash sozlamalari</div>
+                                    <div class="text-sm text-muted">Kwork e'lonlarini qanchalik tez-tez tekshirish</div>
+                                </div>
+                            </div>
+                            <div class="settings-card-body">
+                                <div class="settings-row">
+                                    <label class="settings-label">Skanerlash intervali (sekund)</label>
+                                    <input type="number" class="settings-input" id="scanInterval" value="60" min="30"
+                                        max="300">
+                                </div>
+                                <div class="settings-row">
+                                    <label class="settings-label"
+                                        style="display: flex; align-items: center; gap: var(--space-3);">
+                                        <input type="checkbox" id="autoRespond">
+                                        <span>Avtomatik javob berish</span>
+                                    </label>
+                                    <div class="text-sm text-muted">Yoqilsa, AI maqbul deb topgan e'lonlarga avtomatik
+                                        otklik yuboriladi</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top: var(--space-6); display: flex; justify-content: flex-end; gap: var(--space-3);">
+                        <button class="btn btn-secondary" id="resetKworkSettings">Bekor qilish</button>
+                        <button class="btn btn-primary" id="saveKworkSettings">Saqlash</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Job Detail Modal -->
+    <div class="modal-overlay" id="jobModal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">E'lon tafsilotlari</h3>
+                <button class="modal-close" id="closeJobModal">✕</button>
+            </div>
+            <div class="modal-body" id="jobModalBody">
+                <!-- Job details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeJobModalBtn">Yopish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Prompt Editor Modal -->
+    <div class="modal-overlay fullscreen-modal" id="promptEditorModal">
+        <div class="modal fullscreen-editor">
+            <div class="modal-header">
+                <h3 class="modal-title">📝 System Prompt Editor</h3>
+                <button class="modal-close" id="closePromptEditor">✕</button>
+            </div>
+            <div class="modal-body" style="flex: 1; display: flex; flex-direction: column; padding: 0;">
+                <textarea class="fullscreen-textarea" id="fullscreenPromptInput" placeholder="AI uchun batafsil ko'rsatmalarni kiriting...
+
+Masalan:
+- Sen professional Kwork frilanser assistantisan
+- E'lonlarni tahlil qilib javob berishing kerak
+- JSON formatda javob ber
+..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <div class="prompt-char-count">
+                    <span id="promptCharCount">0</span> belgi
+                </div>
+                <button class="btn btn-secondary" id="cancelPromptEdit">Bekor qilish</button>
+                <button class="btn btn-primary" id="applyPromptEdit">✓ Qo'llash</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/jobs.js"></script>
+    <script src="/static/js/settings.js"></script>
+</body>
+
+</html>

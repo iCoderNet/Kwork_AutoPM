@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kwork AI Project Manager - Avtomatik e'lonlarga javob berish tizimi">
+    <title>Kirish | Kwork AI PM</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E">
+</head>
+
+<body>
+    <div class="login-page">
+        <!-- Background Effects -->
+        <div class="login-bg"></div>
+        <div class="login-grid"></div>
+        <div class="particles" id="particles"></div>
+
+        <div class="login-container">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="login-logo">
+                    <div class="login-logo-icon">🤖</div>
+                    <span class="login-logo-text">Kwork AI PM</span>
+                </div>
+                <h1 class="login-title">Xush kelibsiz!</h1>
+                <p class="login-subtitle">Davom etish uchun hisobingizga kiring</p>
+            </div>
+
+            <!-- Login Card -->
+            <div class="login-card">
+                <form class="login-form" id="loginForm">
+                    <!-- Error Message -->
+                    <div class="login-error" id="loginError">
+                        <span class="login-error-icon">⚠️</span>
+                        <span id="errorMessage">Xatolik yuz berdi</span>
+                    </div>
+
+                    <!-- Username -->
+                    <div class="login-input-group">
+                        <input type="text" class="login-input" id="username" name="username"
+                            placeholder="Foydalanuvchi nomi" autocomplete="username" required>
+                        <span class="login-input-icon">👤</span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="login-input-group">
+                        <input type="password" class="login-input" id="password" name="password" placeholder="Parol"
+                            autocomplete="current-password" required>
+                        <span class="login-input-icon">🔒</span>
+                        <button type="button" class="password-toggle" id="passwordToggle">
+                            <span id="toggleIcon">👁️</span>
+                        </button>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="login-options">
+                        <label class="login-checkbox">
+                            <input type="checkbox" id="rememberMe" checked>
+                            <span>Eslab qolish</span>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="login-submit" id="submitBtn">
+                        <span id="submitText">Kirish</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                © 2024 Kwork AI PM. Barcha huquqlar himoyalangan.
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                particle.style.animationDelay = (Math.random() * 10) + 's';
+                particle.style.width = (Math.random() * 4 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+
+            // Check if already logged in
+            if (Auth.isAuthenticated()) {
+                window.location.href = '/dashboard';
+                return;
+            }
+
+            // Password toggle
+            const passwordToggle = document.getElementById('passwordToggle');
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            passwordToggle.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                toggleIcon.textContent = isPassword ? '🙈' : '👁️';
+            });
+
+            // Form submit
+            const loginForm = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const loginError = document.getElementById('loginError');
+            const errorMessage = document.getElementById('errorMessage');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Get form values
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+
+                // Validate
+                if (!username || !password) {
+                    showError('Iltimos, barcha maydonlarni to\'ldiring');
+                    return;
+                }
+
+                // Show loading
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+                loginError.classList.remove('show');
+
+                try {
+                    const result = await Auth.login(username, password, rememberMe);
+
+                    if (result.success) {
+                        // Redirect to dashboard
+                        window.location.href = '/dashboard';
+                    } else {
+                        showError(result.error || 'Kirish muvaffaqiyatsiz');
+                    }
+                } catch (error) {
+                    showError('Server bilan bog\'lanishda xatolik');
+                    console.error('Login error:', error);
+                } finally {
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                }
+            });
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                loginError.classList.add('show');
+
+                // Shake animation
+                loginError.style.animation = 'none';
+                loginError.offsetHeight; // Trigger reflow
+                loginError.style.animation = 'fadeIn 0.3s ease-out';
+            }
+
+            // Focus first input
+            document.getElementById('username').focus();
+        });
+    </script>
+</body>
+
+</html>
