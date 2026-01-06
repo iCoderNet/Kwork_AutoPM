@@ -301,3 +301,92 @@ class TelegramService:
             "success": False,
             "error": result.get("description", "Xatolik")
         }
+    
+    async def send_simple_job_notification(self, job) -> dict:
+        """
+        AI tahlilisiz oddiy e'lon xabarini yuborish
+        API limit tugaganda yoki AI ishlamay qolganda ishlatiladi
+        """
+        import json
+        
+        # Kategoriya olish
+        category_name = job.category
+        if not category_name or category_name == "N/A":
+            try:
+                if job.kwork_json:
+                    kwork_data = json.loads(job.kwork_json)
+                    category_name = kwork_data.get("parent_category_name") or kwork_data.get("category_name") or "N/A"
+            except:
+                category_name = "N/A"
+        
+        # Client info
+        client_name = job.client_name or "N/A"
+        client_link = f'<a href="https://kwork.ru/user/{client_name}">{client_name}</a>' if client_name != "N/A" else "N/A"
+        
+        # Buyurtmachi statistikasi
+        client_stats = ""
+        if job.client_wants_count:
+            client_stats += f"• Buyurtmalar: {job.client_wants_count} ta\n"
+        if job.client_hired_percent:
+            client_stats += f"• Yollash foizi: {job.client_hired_percent}%\n"
+        
+        # Description (qisqartirilgan)
+        description = job.description or ""
+        if len(description) > 500:
+            description = description[:500] + "..."
+        
+        # Vaqt haqida ma'lumot
+        time_info = ""
+        if job.max_days:
+            time_info = f"⏰ <b>Muddat:</b> {job.max_days} kun\n"
+        if job.time_left:
+            time_info += f"⏳ <b>Qolgan vaqt:</b> {job.time_left}\n"
+        
+        # Xabar matni
+        message = f"""
+🆕 <b>Yangi loyiha (AI tahlilsiz)</b>
+
+📋 <b>Sarlavha:</b>
+{job.title[:200]}
+
+📁 <b>Kategoriya:</b> {category_name}
+
+💰 <b>Byudjet:</b> {int(float(job.budget)) if job.budget else 'Belgilanmagan'} ₽
+👤 <b>Buyurtmachi:</b> {client_link}
+{client_stats}
+{time_info}
+<blockquote>📄 <b>Tavsif:</b>
+{description}</blockquote>
+
+⚠️ <i>AI tahlili hozircha mavjud emas (API limit)</i>
+"""
+        
+        # Tugmalar
+        job_url = f"https://kwork.ru/projects/{job.kwork_id}"
+        detail_url = f"{settings.DOMAIN}/job-detail?id={job.id}"
+        
+        buttons = [
+            [
+                {"text": "📋 To'liq tanishish", "url": detail_url}
+            ],
+            [
+                {"text": "🔗 Kworkda ochish", "url": job_url}
+            ],
+            [
+                {"text": "❌ O'tkazib yuborish", "callback_data": f"skip_{job.id}"}
+            ]
+        ]
+        
+        result = await self.send_message_with_buttons(message.strip(), buttons)
+        
+        # Message ID ni saqlash uchun qaytarish
+        if result.get("ok") and result.get("result"):
+            return {
+                "success": True,
+                "message_id": result["result"].get("message_id")
+            }
+        
+        return {
+            "success": False,
+            "error": result.get("description", "Xatolik")
+        }

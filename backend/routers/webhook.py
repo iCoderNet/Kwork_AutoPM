@@ -179,10 +179,17 @@ async def process_jobs_background(job_ids: List[int]):
                         logger.warning(f"   ⚠️ AI service yo'q - tahlil o'tkazib yuborildi")
                     
                     # Telegram ga yuborish (barcha joblar yuboriladi)
-                    if telegram_service and ai_data:
+                    if telegram_service:
                         logger.info(f"   📨 Telegram ga yuborilmoqda...")
                         try:
-                            tg_result = await telegram_service.send_job_notification(job, ai_data)
+                            if ai_data:
+                                # AI tahlili mavjud - to'liq xabar
+                                tg_result = await telegram_service.send_job_notification(job, ai_data)
+                            else:
+                                # AI tahlili yo'q - oddiy xabar yuborish
+                                logger.info(f"   ⚠️ AI data yo'q - oddiy xabar yuborilmoqda")
+                                tg_result = await telegram_service.send_simple_job_notification(job)
+                            
                             logger.debug(f"   📬 Telegram response: {tg_result}")
                             
                             if tg_result.get("success"):
@@ -196,8 +203,6 @@ async def process_jobs_background(job_ids: List[int]):
                             logger.error(f"   ❌ Telegram exception: {type(e).__name__}: {e}")
                     elif not telegram_service:
                         logger.warning(f"   ⚠️ Telegram service yo'q")
-                    elif not ai_data:
-                        logger.warning(f"   ⚠️ AI data yo'q - Telegram yuborilmadi")
                             
                 except Exception as e:
                     logger.error(f"   ❌ Job #{job_id} umumiy xato: {type(e).__name__}: {e}")

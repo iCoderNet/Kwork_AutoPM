@@ -761,6 +761,27 @@
     border-color: var(--primary-500);
 }
 
+/* Select dropdown styling for dark theme */
+.settings-input.select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.settings-input.select option,
+.settings-input.select optgroup {
+    background-color: #1a1a2e;
+    color: #e5e7eb;
+}
+
+.settings-input.select optgroup {
+    font-weight: 600;
+    color: #9ca3af;
+}
+
 .settings-textarea {
     min-height: 150px;
     resize: vertical;
