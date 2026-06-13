@@ -55,37 +55,13 @@ def _extract_json(text: str) -> Optional[dict]:
 async def _send_telegram_notification(
     telegram: TelegramService, job: Job, ai_data: dict
 ):
-    """Telegram ga loyiha haqida xabar yuborish"""
-    reason_ru = ai_data.get("reason", {}).get("ru", "") if isinstance(ai_data.get("reason"), dict) else str(ai_data.get("reason", ""))
-    proposal_ru = ai_data.get("proposal_text", {}).get("ru", "") if isinstance(ai_data.get("proposal_text"), dict) else ""
-
-    price = ai_data.get("estimated_price_rub", "")
-    time_h = ai_data.get("estimated_time_human", "")
-    confidence = ai_data.get("confidence_score", 0)
-    risk = ai_data.get("risk_score", 0)
-
-    text = (
-        f"🟢 <b>Yangi loyiha qabul qilindi!</b>\n\n"
-        f"📌 <b>{job.title}</b>\n"
-        f"💰 Byudjet: {job.budget or '—'}\n"
-        f"📂 Kategoriya: {job.category or '—'}\n\n"
-        f"🤖 <b>AI tahlil:</b>\n"
-        f"  • Ishonch: {round(confidence * 100)}%\n"
-        f"  • Risk: {round(risk * 100)}%\n"
-        f"  • Narx: {price} RUB\n"
-        f"  • Muddat: {time_h}\n\n"
-        f"💬 <b>Sabab:</b> {reason_ru}\n\n"
-        f"✍️ <b>Taklif:</b>\n{proposal_ru}\n\n"
-        f"🔗 <a href='{job.url if hasattr(job, 'url') else f'https://kwork.ru/projects/{job.kwork_id}'}'>Kwork'da ko'rish</a>"
-    )
-
-    result = await telegram.send_message(text)
-    if result.get("ok"):
-        msg_id = result.get("result", {}).get("message_id")
-        job.telegram_message_id = str(msg_id) if msg_id else None
+    """Telegram ga loyiha haqida xabar yuborish (to'g'ri format bilan)"""
+    result = await telegram.send_job_notification(job, ai_data)
+    if result.get("success"):
+        job.telegram_message_id = str(result.get("message_id", ""))
         job.telegram_sent = True
     else:
-        logger.warning(f"Telegram yuborishda xato: {result}")
+        logger.warning(f"Telegram yuborishda xato: {result.get('error')}")
 
 
 async def scan_and_process():
@@ -183,8 +159,8 @@ async def scan_and_process():
 
                             job.status = JobStatus.RESPONDED if job.can_take else JobStatus.SKIPPED
 
-                            # Telegram
-                            if job.can_take and telegram:
+                            # Telegram — mos va mos emas loyihalar ham yuboriladi
+                            if telegram:
                                 await _send_telegram_notification(telegram, job, ai_data)
                         else:
                             job.status = JobStatus.FAILED
