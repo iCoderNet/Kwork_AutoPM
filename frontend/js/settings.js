@@ -34,6 +34,7 @@ const Settings = {
             const ai = this.settings.ai;
             this.setFieldValue('aiModelSelect', ai.ai_model?.value);
             this.setFieldValue('aiApiKeyInput', ai.ai_api_key?.has_value ? '••••••••' : '');
+            this.setFieldValue('aiBaseUrlInput', ai.ai_base_url?.value || '');
             this.setFieldValue('aiPromptInput', ai.ai_prompt?.value);
         }
 
@@ -74,15 +75,27 @@ const Settings = {
      * Save AI settings
      */
     async saveAISettings() {
+        const model = document.getElementById('aiModelSelect').value;
         const settings = {
-            ai_model: document.getElementById('aiModelSelect').value,
+            ai_model: model,
             ai_prompt: document.getElementById('aiPromptInput').value
         };
 
-        // Only include API key if changed
+        // API key — faqat o'zgargan bo'lsa
         const apiKey = document.getElementById('aiApiKeyInput').value;
         if (apiKey && apiKey !== '••••••••') {
             settings.ai_api_key = apiKey;
+        }
+
+        // Base URL — kiritilgan bo'lsa ishlatamiz, aks holda model bo'yicha default
+        const baseUrlInput = document.getElementById('aiBaseUrlInput');
+        const baseUrlVal = baseUrlInput ? baseUrlInput.value.trim() : '';
+        if (baseUrlVal) {
+            settings.ai_base_url = baseUrlVal;
+        } else if (model === 'openai/gpt-oss-120b') {
+            settings.ai_base_url = 'https://p950-w009-runai-p950.runai-inference.dc.uz/v1';
+        } else {
+            settings.ai_base_url = '';
         }
 
         await this.saveSettings(settings, 'AI sozlamalari saqlandi');

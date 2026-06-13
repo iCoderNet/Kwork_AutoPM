@@ -16,47 +16,53 @@ class AIService:
     GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
     OPENAI_BASE_URL = "https://api.openai.com/v1/chat/completions"
     ANTHROPIC_BASE_URL = "https://api.anthropic.com/v1/messages"
-    
-    def __init__(self, api_key: str, model: str, system_prompt: str = ""):
+
+    def __init__(self, api_key: str, model: str, system_prompt: str = "", base_url: str = ""):
         self.api_key = api_key
         self.model = model
         self.system_prompt = system_prompt
-    
+        self.base_url = base_url  # Custom OpenAI-compatible endpoint
+
     @classmethod
     async def from_db(cls, db: AsyncSession) -> Optional["AIService"]:
         """Create AIService from database settings"""
-        # Get required settings
         result = await db.execute(select(Settings).where(Settings.key == "ai_api_key"))
         api_key_setting = result.scalar_one_or_none()
-        
+
         result = await db.execute(select(Settings).where(Settings.key == "ai_model"))
         model_setting = result.scalar_one_or_none()
-        
+
         result = await db.execute(select(Settings).where(Settings.key == "ai_prompt"))
         prompt_setting = result.scalar_one_or_none()
-        
+
+        result = await db.execute(select(Settings).where(Settings.key == "ai_base_url"))
+        base_url_setting = result.scalar_one_or_none()
+
         if not api_key_setting or not api_key_setting.value:
             return None
-        
+
         model = model_setting.value if model_setting else "gemini-2.0-flash"
         prompt = prompt_setting.value if prompt_setting else ""
-        
+        base_url = base_url_setting.value if base_url_setting else ""
+
         return cls(
             api_key=api_key_setting.value,
             model=model,
-            system_prompt=prompt
+            system_prompt=prompt,
+            base_url=base_url,
         )
-    
+
+    def is_custom(self) -> bool:
+        """Custom OpenAI-compatible endpoint (base_url to'ldirilgan)"""
+        return bool(self.base_url)
+
     def is_gemini(self) -> bool:
-        """Check if using Gemini model"""
         return self.model.startswith("gemini")
-    
+
     def is_openai(self) -> bool:
-        """Check if using OpenAI model"""
         return self.model.startswith("gpt")
-    
+
     def is_anthropic(self) -> bool:
-        """Check if using Anthropic model"""
         return self.model.startswith("claude")
     
     async def generate_response(self, job_description: str, budget: str) -> Dict[str, Any]:
@@ -66,7 +72,9 @@ class AIService:
         full_prompt = self._build_prompt(job_description, budget)
         
         try:
-            if self.is_gemini():
+            if self.is_custom():
+                return await self._call_custom(full_prompt)
+            elif self.is_gemini():
                 return await self._call_gemini(full_prompt)
             elif self.is_openai():
                 return await self._call_openai(full_prompt)
@@ -75,7 +83,7 @@ class AIService:
             else:
                 return {
                     "success": False,
-                    "error": f"Noma'lum model: {self.model}"
+                    "error": f"Noma'lum model: {self.model}. base_url kiriting yoki modelni to'g'ri yozing."
                 }
         except Exception as e:
             return {
@@ -250,6 +258,44 @@ Mijozning tahminiy budgeti: {budget}
 
 Javob:"""
     
+    async def _call_custom(self, prompt: str) -> Dict[str, Any]:
+        """OpenAI-compatible custom endpoint (masalan gpt-oss-120b)"""
+        # base_url oxirida /chat/completions bo'lmasa qo'shamiz
+        url = self.base_url
+        if not url.endswith("/chat/completions"):
+            url = url.rstrip("/") + "/chat/completions"
+
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.7,
+            "max_tokens": 4096,
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+
+        async with httpx.AsyncClient(timeout=90.0) as client:
+            response = await client.post(url, json=payload, headers=headers)
+
+            if response.status_code != 200:
+                try:
+                    error_msg = response.json().get("error", {}).get("message", response.text)
+                except Exception:
+                    error_msg = response.text
+                return {
+                    "success": False,
+                    "error": f"Custom API xatosi ({response.status_code}): {error_msg}",
+                }
+
+            data = response.json()
+            try:
+                text = data["choices"][0]["message"]["content"]
+                return {"success": True, "text": text, "model": self.model, "raw_response": data}
+            except (KeyError, IndexError) as e:
+                return {"success": False, "error": f"Javobni o'qishda xato: {e}"}
+
     async def _call_gemini(self, prompt: str) -> Dict[str, Any]:
         """Call Google Gemini API"""
         url = f"{self.GEMINI_BASE_URL}/{self.model}:generateContent"

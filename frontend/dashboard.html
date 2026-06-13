@@ -295,12 +295,20 @@
                                             <option value="claude-3-opus">Claude 3 Opus</option>
                                             <option value="claude-3-sonnet">Claude 3 Sonnet</option>
                                         </optgroup>
+                                        <optgroup label="🇺🇿 O'zimizning AI">
+                                            <option value="openai/gpt-oss-120b">GPT-OSS-120B (Local)</option>
+                                        </optgroup>
                                     </select>
                                 </div>
                                 <div class="settings-row">
                                     <label class="settings-label">API Key</label>
                                     <input type="password" class="settings-input" id="aiApiKeyInput"
                                         placeholder="Gemini: AIza..., OpenAI: sk-..., Anthropic: sk-ant-...">
+                                </div>
+                                <div class="settings-row">
+                                    <label class="settings-label">Custom Base URL <span class="text-muted" style="font-weight:400">(ixtiyoriy)</span></label>
+                                    <input type="text" class="settings-input" id="aiBaseUrlInput"
+                                        placeholder="https://your-endpoint.uz/v1  (GPT-OSS-120B uchun avtomatik to'ldiriladi)">
                                 </div>
                             </div>
                         </div>

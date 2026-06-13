@@ -7,36 +7,56 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
+import logging
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 
 from config import settings
 from database import init_db, async_session
 from routers import auth_router, jobs_router, settings_router, kwork_router, webhook_router, telegram_callback_router
 from routers.settings import init_default_settings
 from services.auth_service import AuthService
+from services.scheduler_service import scan_and_process, get_scan_interval
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+scheduler = AsyncIOScheduler()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan - startup and shutdown events"""
-    # Startup
     print("🚀 Starting Kwork AI PM...")
-    
-    # Initialize database
+
     await init_db()
     print("✅ Database initialized")
-    
-    # Initialize default settings and admin user
+
     async with async_session() as db:
         await init_default_settings(db)
         await AuthService.create_default_admin(db)
         print("✅ Default settings and admin user ready")
-    
+
+    # Scheduler ishga tushirish
+    interval = await get_scan_interval()
+    scheduler.add_job(
+        scan_and_process,
+        trigger=IntervalTrigger(seconds=interval),
+        id="kwork_scan",
+        replace_existing=True,
+        max_instances=1,      # parallel ikkita scan bo'lmasin
+        coalesce=True,
+    )
+    scheduler.start()
+    print(f"⏰ Scheduler ishga tushdi — har {interval} sekundda skanerlaydi")
+
     print(f"🌐 Server running at {settings.DOMAIN}")
     print(f"📚 API Docs: {settings.DOMAIN}/docs")
-    
+
     yield
-    
-    # Shutdown
+
+    scheduler.shutdown(wait=False)
     print("👋 Shutting down Kwork AI PM...")
 
 

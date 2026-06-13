@@ -29,8 +29,9 @@ DEFAULT_SETTINGS = [
     
     # AI
     {"key": "ai_enabled", "value": "false", "category": "ai", "description": "AI PM yoqilgan", "is_secret": 0},
-    {"key": "ai_model", "value": "gpt-4", "category": "ai", "description": "AI model nomi", "is_secret": 0},
+    {"key": "ai_model", "value": "gpt-4", "category": "ai", "description": "AI model nomi (gemini-2.0-flash / gpt-4 / claude-3-5-sonnet / openai/gpt-oss-120b)", "is_secret": 0},
     {"key": "ai_api_key", "value": "", "category": "ai", "description": "AI API kaliti", "is_secret": 1},
+    {"key": "ai_base_url", "value": "", "category": "ai", "description": "Custom AI base URL (OpenAI-compatible endpointlar uchun)", "is_secret": 0},
     {"key": "ai_prompt", "value": "", "category": "ai", "description": "AI uchun prompt", "is_secret": 0},
     
     # Telegram
